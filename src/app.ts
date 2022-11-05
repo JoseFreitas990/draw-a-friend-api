@@ -1,16 +1,17 @@
 import 'reflect-metadata';
-import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
+process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
+
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
+import config from 'config';
 import morgan from 'morgan';
 import { useExpressServer, getMetadataArgsStorage } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import swaggerUi from 'swagger-ui-express';
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 
@@ -21,8 +22,8 @@ class App {
 
   constructor(Controllers: Function[]) {
     this.app = express();
-    this.env = NODE_ENV || 'development';
-    this.port = PORT || 3000;
+    this.port = 3000;
+    this.env = process.env.NODE_ENV || 'development';
 
     this.initializeMiddlewares();
     this.initializeRoutes(Controllers);
@@ -44,7 +45,7 @@ class App {
   }
 
   private initializeMiddlewares() {
-    this.app.use(morgan(LOG_FORMAT, { stream }));
+    this.app.use(morgan(config.get('log.format'), { stream }));
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
@@ -56,8 +57,8 @@ class App {
   private initializeRoutes(controllers: Function[]) {
     useExpressServer(this.app, {
       cors: {
-        origin: ORIGIN,
-        credentials: CREDENTIALS,
+        origin: config.get('cors.origin'),
+        credentials: config.get('cors.credentials'),
       },
       controllers: controllers,
       defaultErrorHandler: false,
@@ -65,6 +66,8 @@ class App {
   }
 
   private initializeSwagger(controllers: Function[]) {
+    const { defaultMetadataStorage } = require('class-transformer/cjs/storage');
+
     const schemas = validationMetadatasToSchemas({
       classTransformerMetadataStorage: defaultMetadataStorage,
       refPointerPrefix: '#/components/schemas/',

@@ -1,4 +1,4 @@
-import { Controller, Param, Body, Get, Post, Put, Delete, HttpCode, UseBefore } from 'routing-controllers';
+import { Controller, Param, Body, Get, Post, Put, Delete, HttpCode, UseBefore, CookieParam } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { CreateUserDto } from '@/dtos/Swagger/users.dto';
 import { injector } from '@/inversify.config';
@@ -6,6 +6,8 @@ import IUserService from '@/interfaces/user/user_service.interface';
 import { TYPES } from '@/types';
 import { UserDto } from '@/dtos/Application/user.dto';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
+import authMiddleware from '@/middlewares/auth.middleware';
+import { tokenToId } from '@/utils/token';
 
 @Controller()
 export class UsersController {
@@ -43,10 +45,13 @@ export class UsersController {
   //   return { data: updateUserData, message: 'updated' };
   // }
 
-  // @Delete('/users/:id')
-  // @OpenAPI({ summary: 'Delete a user' })
-  // async deleteUser(@Param('id') userId: number) {
-  //   const deleteUserData: User[] = await this.userService.deleteUser(userId);
-  //   return { data: deleteUserData, message: 'deleted' };
-  // }
+  @Delete('/users')
+  //@UseBefore(authMiddleware)
+  @OpenAPI({ summary: 'Delete a user' })
+  async deleteUser(@CookieParam('Authorization') res: string) {
+    const userId = tokenToId(res);
+
+    const deleteUserData: UserDto = await this.userService.deleteUser(userId);
+    return { result: deleteUserData, message: 'deleted' };
+  }
 }

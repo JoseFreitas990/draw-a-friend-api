@@ -1,36 +1,44 @@
-import { compare, hash } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
-import { SECRET_KEY } from '@config';
 import { CreateUserDto } from '@/dtos/Swagger/users.dto';
 import { HttpException } from '@exceptions/HttpException';
-import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
-import { User } from '@/interfaces/user/user_repo.interface';
-import userModel from '@models/users.model';
+import IAuthService, { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { isEmpty } from '@utils/util';
+import { injectable } from 'inversify';
+import { injector } from '@/inversify.config';
+import IUserRepository from '@/interfaces/user/user_repo.interface';
+import { TYPES } from '@/types';
+import { UserDto } from '@/dtos/Application/user.dto';
+import bcrypt from 'bcrypt';
+import { LoginUserDto } from '@/dtos/Swagger/user_login.dto';
+import { User } from '@prisma/client';
+import config from 'config';
+import jwt from 'jsonwebtoken';
 
-class AuthService {
-  public users = userModel;
+@injectable()
+class AuthService implements IAuthService {
+  public usersRepository = injector.get<IUserRepository>(TYPES.IUserRepository);
 
-  public async signup(userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async signup(userData: CreateUserDto): Promise<UserDto> {
+    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email);
-    if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+    const findUser: UserDto = await this.usersRepository.findUserByEmail(userData.email);
+    if (findUser) throw new HttpException(409, `You're email ${userData.email} already exists`);
 
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = { id: this.users.length + 1, ...userData, password: hashedPassword };
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    userData.password = hashedPassword;
 
-    return createUserData;
+    const createUser: UserDto = await this.usersRepository.createUser(userData);
+
+    return createUser;
   }
 
-  public async login(userData: CreateUserDto): Promise<{ cookie: string; findUser: User }> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async login(userData: LoginUserDto): Promise<{ cookie: string; findUser: UserDto }> {
+    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email);
-    if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+    const findUser: User = await this.usersRepository.findUserByEmail(userData.email);
+    if (!findUser) throw new HttpException(409, `You're email ${userData.email} not found`);
 
-    const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
-    if (!isPasswordMatching) throw new HttpException(409, 'Password is not matching');
+    const isPasswordMatching: boolean = await bcrypt.compare(userData.password, findUser.password);
+    if (!isPasswordMatching) throw new HttpException(409, "You're password not matching");
 
     const tokenData = this.createToken(findUser);
     const cookie = this.createCookie(tokenData);
@@ -38,21 +46,25 @@ class AuthService {
     return { cookie, findUser };
   }
 
-  public async logout(userData: User): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+  public async logout(userData: UserDto): Promise<UserDto> {
+    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email && user.password === userData.password);
-    if (!findUser) throw new HttpException(409, "User doesn't exist");
+    const findUser: UserDto = await this.usersRepository.findUserByEmail(userData.email);
+    if (!findUser) throw new HttpException(409, "You're not user");
 
     return findUser;
   }
 
   public createToken(user: User): TokenData {
+    /**
+     * One hour Token
+     */
+
     const dataStoredInToken: DataStoredInToken = { id: user.id };
-    const secretKey: string = SECRET_KEY;
+    const secretKey: string = config.get('secretKey');
     const expiresIn: number = 60 * 60;
 
-    return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
+    return { expiresIn, token: jwt.sign(dataStoredInToken, secretKey, { expiresIn }) };
   }
 
   public createCookie(tokenData: TokenData): string {

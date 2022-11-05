@@ -1,8 +1,10 @@
 import { Request } from 'express';
-import { User } from '@/interfaces/user/user_repo.interface';
+import { UserDto } from '@/dtos/Application/user.dto';
+import { User } from '@prisma/client';
+import { LoginUserDto } from '@/dtos/Swagger/user_login.dto';
 
 export interface DataStoredInToken {
-  id: number;
+  id: string;
 }
 
 export interface TokenData {
@@ -12,4 +14,11 @@ export interface TokenData {
 
 export interface RequestWithUser extends Request {
   user: User;
+}
+
+export default interface IAuthService {
+  login(userData: LoginUserDto): Promise<{ cookie: string; findUser: UserDto }>;
+  logout(userData: UserDto): Promise<UserDto>;
+  createToken(user: UserDto): TokenData;
+  createCookie(tokenData: TokenData): string;
 }

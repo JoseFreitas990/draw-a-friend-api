@@ -1,0 +1,12 @@
+{
+    "env": "development",
+    "secretKey": "9g;]YYr_PzXQ!8gn-|KKe%>{!K3is^",
+    "log": {
+        "format": "dev",
+        "dir": "../logs"
+    },
+    "cors": {
+        "origin": true,
+        "credentials": true
+    }
+}
