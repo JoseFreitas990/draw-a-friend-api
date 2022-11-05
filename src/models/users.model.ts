@@ -1,4 +1,4 @@
-import { User } from '@interfaces/users.interface';
+import { User } from '@/interfaces/user/user_repo.interface';
 
 // password: password
 const userModel: User[] = [
