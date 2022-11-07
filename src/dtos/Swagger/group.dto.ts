@@ -4,7 +4,7 @@ import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsObject, IsString, ValidateN
 class Schema {
   @IsString()
   @IsNotEmpty()
-  id: string;
+  userId: string;
 }
 export class CreateGroupDto {
   @IsString()

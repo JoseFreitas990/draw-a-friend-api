@@ -2,7 +2,6 @@ import { CreateGroupDto } from '@/dtos/Swagger/group.dto';
 import IGroupRepository from '@/interfaces/group/group_repo.interface';
 import prisma from '@/utils/db';
 import { Group } from '@prisma/client';
-import { connect } from 'http2';
 import { injectable } from 'inversify';
 
 @injectable()
@@ -11,15 +10,22 @@ export class GroupRepository implements IGroupRepository {
     /**
      * Find All Products
      */
-
-    const groups = await prisma.group.findMany({});
+    const groups = await prisma.group.findMany({
+      // include: {
+      //   user: {
+      //     select: {
+      //       userId: true,
+      //     },
+      //   },
+      // },
+    });
 
     return groups;
   }
 
   async findGroupById(id: string): Promise<Group> {
     /**
-     * Find Product by Id
+     * Find Group by Id
      */
 
     const group = await prisma.group.findUnique({
@@ -31,17 +37,16 @@ export class GroupRepository implements IGroupRepository {
     return group;
   }
 
-  async createGroup(group: CreateGroupDto): Promise<any> {
+  async createGroup(group: CreateGroupDto): Promise<Group> {
     /**
-     * Create a Product
+     * Create a Group
      */
 
     const groups = await prisma.group.create({
       data: {
         name: group.name,
-
         user: {
-          connect: group.users,
+          create: group.users,
         },
       },
     });
@@ -49,46 +54,47 @@ export class GroupRepository implements IGroupRepository {
     return groups;
   }
 
-  async updateGroup(id: string, group: CreateGroupDto): Promise<any> {
+  async updateGroup(id: string, group: CreateGroupDto): Promise<number> {
     /**
      * Update all fields of a Product
      */
-    // try {
-    //   const updateProduct = await prisma.product_Wharehouse.updateMany({
-    //     where: {
-    //       id: id,
-    //       version: group.version,
-    //     },
-    //     data: {
-    //       name: group.name,
-    //       grossweight: group.grossweight,
-    //       netWeight: group.netWeight,
-    //       width: group.width,
-    //       lenght: group.lenght,
-    //       hscode: group.hscode,
-    //       price_acq: group.price_acq,
-    //       price_aux: group.price_aux,
-    //       ean: group.ean,
-    //       version: {
-    //         increment: 1,
-    //       },
-    //     },
-    //   });
-    //   return updateProduct.count;
-    // } catch (error) {
-    //   return null;
-    // }
+    try {
+      const updateGroup = await prisma.group.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: group.name,
+          user: { create: group.users },
+        },
+      });
+      return this.updateGroup.length;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   async deleteGroup(id: string): Promise<Group> {
     /**
-     * Delete a Product
+     * Delete a Group
      */
-
+    // const updateRelation = await prisma.group.update({
+    //   where: {
+    //     id: id,
+    //   },
+    //   data: {
+    //     user: { disconnect: [] },
+    //   },
+    //   include: {
+    //     user: true,
+    //   },
+    // });
     const deleteGroup = await prisma.group.delete({
       where: {
         id: id,
       },
+      include: { user: true },
     });
 
     return deleteGroup;

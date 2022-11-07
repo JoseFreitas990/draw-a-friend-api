@@ -16,8 +16,7 @@ model User {
   email String @unique
   password String?
   draws Draw[]
-
-  group Group[]
+  group GroupUser[]
 
 }
 
@@ -25,7 +24,7 @@ model Group {
   id    String @id @default(cuid())
   name String
 
-  user User[]
+  user GroupUser[]
   
   draws Draw[]
 
@@ -37,9 +36,18 @@ model Draw{
   date DateTime @default(now())
 
   groupId String 
-  groupDraw Group @relation(fields: [groupId],references: [id])
+  groupDraw Group @relation(fields: [groupId],references: [id],onDelete: Cascade)
 
   userId String 
   result User @relation(fields:[userId],references: [id])
 }
 
+model GroupUser{
+  userId String
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  groupId String
+  group Group @relation(fields: [groupId],references: [id],onDelete: Cascade)
+
+  @@id([userId,groupId])
+}
