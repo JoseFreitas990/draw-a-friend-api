@@ -2,6 +2,7 @@ import { CreateGroupDto } from '@/dtos/Swagger/group.dto';
 import IGroupRepository from '@/interfaces/group/group_repo.interface';
 import prisma from '@/utils/db';
 import { Group } from '@prisma/client';
+import { connect } from 'http2';
 import { injectable } from 'inversify';
 
 @injectable()
@@ -30,7 +31,7 @@ export class GroupRepository implements IGroupRepository {
     return group;
   }
 
-  async createGroup(group: CreateGroupDto): Promise<Group> {
+  async createGroup(group: CreateGroupDto): Promise<any> {
     /**
      * Create a Product
      */
@@ -38,6 +39,11 @@ export class GroupRepository implements IGroupRepository {
     const groups = await prisma.group.create({
       data: {
         name: group.name,
+        // user: { connect: [{ id: group.users[0] }, { id: group.users[1] }] },
+
+        user: {
+          connect: group.users,
+        },
       },
     });
 

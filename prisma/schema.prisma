@@ -17,7 +17,7 @@ model User {
   password String?
   draws Draw[]
 
-  group UserGroup[]
+  group Group[]
 
 }
 
@@ -25,7 +25,7 @@ model Group {
   id    String @id @default(cuid())
   name String
 
-  user UserGroup[]
+  user User[]
   
   draws Draw[]
 
@@ -43,12 +43,3 @@ model Draw{
   result User @relation(fields:[userId],references: [id])
 }
 
-model UserGroup{
-  userId String
-  user User @relation(fields: [userId],references: [id])
-
-  groupId String
-  group Group @relation(fields: [groupId],references: [id])
-
-  @@id([userId,groupId])
-}

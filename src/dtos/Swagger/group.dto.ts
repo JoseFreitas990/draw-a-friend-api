@@ -1,11 +1,18 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
 
+class Schema {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+}
 export class CreateGroupDto {
   @IsString()
   @IsNotEmpty()
   public name: string;
 
+  @ValidateNested({ each: true })
   @IsNotEmpty()
-  @IsString()
-  public users: string;
+  @Type(() => Schema)
+  public users: Schema[];
 }
