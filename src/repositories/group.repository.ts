@@ -39,7 +39,6 @@ export class GroupRepository implements IGroupRepository {
     const groups = await prisma.group.create({
       data: {
         name: group.name,
-        // user: { connect: [{ id: group.users[0] }, { id: group.users[1] }] },
 
         user: {
           connect: group.users,
