@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateGroupDto {
   @IsString()
@@ -6,6 +6,6 @@ export class CreateGroupDto {
   public name: string;
 
   @IsNotEmpty()
-  @IsArray()
-  public users: string[];
+  @IsString()
+  public users: string;
 }
