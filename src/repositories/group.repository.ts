@@ -37,6 +37,20 @@ export class GroupRepository implements IGroupRepository {
     return group;
   }
 
+  async findGroupsByUserId(id: string): Promise<Group[]> {
+    const groups = await prisma.group.findMany({
+      where: {
+        user: {
+          some: {
+            userId: id,
+          },
+        },
+      },
+    });
+
+    return groups;
+  }
+
   async createGroup(group: CreateGroupDto): Promise<Group> {
     /**
      * Create a Group
@@ -59,6 +73,7 @@ export class GroupRepository implements IGroupRepository {
      * Update all fields of a Product
      */
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const updateGroup = await prisma.group.update({
         where: {
           id: id,

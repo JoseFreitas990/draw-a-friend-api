@@ -27,6 +27,13 @@ export class GroupService implements IGroupService {
     return findGroup;
   }
 
+  async findGroupsByUserId(id: string): Promise<GroupDto[]> {
+    const groups = await this.groupRepository.findGroupsByUserId(id);
+    if (!groups) throw new HttpException(409, 'No Groups found with this key');
+
+    return groups;
+  }
+
   async createGroup(groupData: CreateGroupDto): Promise<GroupDto> {
     let newGroup: GroupDto;
 

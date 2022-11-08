@@ -27,6 +27,14 @@ export class GroupController {
     return { result: findOneUserData, message: 'findOne' };
   }
 
+  @Get('/groups/user/:id')
+  //@UseBefore(authMiddleware)
+  @OpenAPI({ summary: 'Return information about groups of a user' })
+  async getGroupsByUserId(@Param('id') id: string) {
+    const findOneUserData: GroupDto[] = await this.groupService.findGroupsByUserId(id);
+    return { result: findOneUserData, message: 'findOne' };
+  }
+
   @Post('/groups')
   //@UseBefore(authMiddleware)
   @HttpCode(201)
