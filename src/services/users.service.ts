@@ -29,6 +29,12 @@ export class UserService implements IUserService {
     return findUser;
   }
 
+  public async findUsersByGroup(groupId: string): Promise<UserDto[]> {
+    const users: User[] = await this.usersRepository.findUsersByGroup(groupId);
+
+    return this.listToDto(users);
+  }
+
   public async createUser(userData: CreateUserDto): Promise<UserDto> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 

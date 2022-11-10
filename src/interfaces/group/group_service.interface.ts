@@ -7,7 +7,7 @@ export default interface IGroupService {
   findGroupsByUserId(id: string): Promise<GroupDto[]>;
 
   createGroup(group: CreateGroupDto): Promise<GroupDto>;
-  updateGroup(id: string, userData: CreateGroupDto): Promise<Number>;
+  updateGroup(id: string, userData: CreateGroupDto): Promise<GroupDto>;
   deleteUsersFromGroup(id: string, userData: DeleteGroupDto): Promise<Number>;
 
   deleteGroup(id: string): Promise<GroupDto>;

@@ -6,7 +6,7 @@ export default interface IGroupRepository {
   findGroupById(id: string): Promise<Group>;
   findGroupsByUserId(id: string): Promise<Group[]>;
   createGroup(group: CreateGroupDto): Promise<Group>;
-  updateGroup(groupId: string, userData: CreateGroupDto): Promise<Number>;
+  updateGroup(groupId: string, userData: CreateGroupDto): Promise<Group>;
   deleteUsersFromGroup(id: string, userData: DeleteGroupDto): Promise<Number>;
   deleteGroup(groupId: string): Promise<Group>;
 }

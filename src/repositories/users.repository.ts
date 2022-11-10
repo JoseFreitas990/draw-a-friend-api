@@ -44,6 +44,15 @@ export class UserRepository implements IUserRepository {
     return user;
   }
 
+  public async findUsersByGroup(groupId: string): Promise<User[] | null> {
+    const users = await prisma.user.findMany({
+      where: {
+        group: { every: { groupId: groupId } },
+      },
+    });
+    return users;
+  }
+
   public async createUser(userData: CreateUserDto): Promise<User> {
     /**
      * Create a User and Img, only admins can do this

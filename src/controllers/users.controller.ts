@@ -6,7 +6,6 @@ import IUserService from '@/interfaces/user/user_service.interface';
 import { TYPES } from '@/types';
 import { UserDto } from '@/dtos/Application/user.dto';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
-import authMiddleware from '@/middlewares/auth.middleware';
 import { tokenToId } from '@/utils/token';
 
 @Controller()
@@ -26,6 +25,13 @@ export class UsersController {
   async getUserById(@Param('id') userId: string) {
     const findOneUserData: UserDto = await this.userService.findUserById(userId);
     return { data: findOneUserData, message: 'findOne' };
+  }
+
+  @Get('/usrs/group/:id')
+  @OpenAPI({ summary: 'Return list of users of a group' })
+  async getUsersByGroup(@Param('id') groupId: string) {
+    const findAllUsersData: UserDto[] = await this.userService.findUsersByGroup(groupId);
+    return { result: findAllUsersData, message: 'findAll' };
   }
 
   @Post('/users')

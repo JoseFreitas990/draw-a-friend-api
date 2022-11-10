@@ -32,8 +32,9 @@ export class GroupRepository implements IGroupRepository {
       where: {
         id: id,
       },
+      include: { user: true },
     });
-
+    console.log(group);
     return group;
   }
 
@@ -68,22 +69,21 @@ export class GroupRepository implements IGroupRepository {
     return groups;
   }
 
-  async updateGroup(id: string, group: CreateGroupDto): Promise<number> {
+  async updateGroup(id: string, group: CreateGroupDto): Promise<Group> {
     /**
-     * Update all fields of a Product
+     * Update all fields of a Group
      */
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const updateGroup = await prisma.group.update({
         where: {
           id: id,
         },
         data: {
           name: group.name,
-          user: { create: group.users },
+          user: group.users && { create: group.users },
         },
       });
-      return this.updateGroup.length;
+      return updateGroup;
     } catch (error) {
       console.log(error);
       return null;
@@ -101,6 +101,8 @@ export class GroupRepository implements IGroupRepository {
         userId: { in: userData.users.map(user => user.userId) },
       },
     });
+
+    return response.count;
   }
 
   async deleteGroup(id: string): Promise<Group> {
