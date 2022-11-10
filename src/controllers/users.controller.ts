@@ -29,7 +29,7 @@ export class UsersController {
   }
 
   @Post('/users')
-  //@UseBefore(onlyAdminsMiddleware)
+  // @UseBefore(onlyAdminsMiddleware)
   @HttpCode(201)
   @UseBefore(validationMiddleware(CreateUserDto, 'body'))
   @OpenAPI({ summary: 'Create a new user' })
@@ -37,13 +37,14 @@ export class UsersController {
     const createUserData: UserDto = await this.userService.createUser(userData);
     return { result: createUserData, message: 'created' };
   }
-  // @Put('/users/:id')
-  // @UseBefore(validationMiddleware(CreateUserDto, 'body', true))
-  // @OpenAPI({ summary: 'Update a user' })
-  // async updateUser(@Param('id') userId: number, @Body() userData: CreateUserDto) {
-  //   const updateUserData: User[] = await this.userService.updateUser(userId, userData);
-  //   return { data: updateUserData, message: 'updated' };
-  // }
+  @Put('/users/:id')
+  @UseBefore(validationMiddleware(CreateUserDto, 'body', true))
+  @OpenAPI({ summary: 'Update a user' })
+  async updateUser(@CookieParam('Authorization') res: string, @Body() userData: CreateUserDto) {
+    const userId = tokenToId(res);
+    const updateUserData: Number = await this.userService.updateUser(userId, userData);
+    return { data: updateUserData, message: 'updated' };
+  }
 
   @Delete('/users')
   //@UseBefore(authMiddleware)

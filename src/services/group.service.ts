@@ -6,7 +6,7 @@ import { TYPES } from '@/types';
 import IGroupService from '@/interfaces/group/group_service.interface';
 import { GroupDto } from '@/dtos/Application/group.dto';
 import IGroupRepository from '@/interfaces/group/group_repo.interface';
-import { CreateGroupDto } from '@/dtos/Swagger/group.dto';
+import { CreateGroupDto, DeleteGroupDto } from '@/dtos/Swagger/group.dto';
 
 @injectable()
 export class GroupService implements IGroupService {
@@ -54,6 +54,16 @@ export class GroupService implements IGroupService {
     if (newGroup <= 0) throw new HttpException(409, 'Error updating group');
 
     return newGroup;
+  }
+
+  async deleteUsersFromGroup(id: string, groupData: DeleteGroupDto): Promise<Number> {
+    const findGroup: GroupDto = await this.groupRepository.findGroupById(id);
+    if (!findGroup) throw new HttpException(409, 'No group found with this key');
+
+    const usersDeleted = await this.groupRepository.deleteUsersFromGroup(id, groupData);
+    if (usersDeleted <= 0) throw new HttpException(409, 'Error deleting users');
+
+    return usersDeleted;
   }
 
   async deleteGroup(id: string): Promise<GroupDto> {

@@ -1,4 +1,4 @@
-import { CreateGroupDto } from '@/dtos/Swagger/group.dto';
+import { CreateGroupDto, DeleteGroupDto } from '@/dtos/Swagger/group.dto';
 import { Group } from '@prisma/client';
 
 export default interface IGroupRepository {
@@ -7,5 +7,6 @@ export default interface IGroupRepository {
   findGroupsByUserId(id: string): Promise<Group[]>;
   createGroup(group: CreateGroupDto): Promise<Group>;
   updateGroup(groupId: string, userData: CreateGroupDto): Promise<Number>;
+  deleteUsersFromGroup(id: string, userData: DeleteGroupDto): Promise<Number>;
   deleteGroup(groupId: string): Promise<Group>;
 }

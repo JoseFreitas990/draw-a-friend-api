@@ -8,10 +8,11 @@ import IUserRepository from '@/interfaces/user/user_repo.interface';
 import { TYPES } from '@/types';
 import { UserDto } from '@/dtos/Application/user.dto';
 import bcrypt from 'bcrypt';
-import { LoginUserDto } from '@/dtos/Swagger/user_login.dto';
+import { LoginUserDto } from '@/dtos/Swagger/user-login.dto';
 import { User } from '@prisma/client';
 import config from 'config';
 import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '@/configs-values';
 
 @injectable()
 class AuthService implements IAuthService {
@@ -61,7 +62,7 @@ class AuthService implements IAuthService {
      */
 
     const dataStoredInToken: DataStoredInToken = { id: user.id };
-    const secretKey: string = config.get('secretKey');
+    const secretKey: string = SECRET_KEY;
     const expiresIn: number = 60 * 60;
 
     return { expiresIn, token: jwt.sign(dataStoredInToken, secretKey, { expiresIn }) };

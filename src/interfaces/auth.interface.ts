@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { UserDto } from '@/dtos/Application/user.dto';
 import { User } from '@prisma/client';
-import { LoginUserDto } from '@/dtos/Swagger/user_login.dto';
+import { LoginUserDto } from '@/dtos/Swagger/user-login.dto';
 
 export interface DataStoredInToken {
   id: string;
@@ -13,7 +13,7 @@ export interface TokenData {
 }
 
 export interface RequestWithUser extends Request {
-  user: User;
+  user: UserDto;
 }
 
 export default interface IAuthService {

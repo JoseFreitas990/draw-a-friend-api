@@ -5,7 +5,7 @@ import authMiddleware from '@middlewares/auth.middleware';
 import { validationMiddleware } from '@middlewares/validation.middleware';
 import { injector } from '@/inversify.config';
 import { TYPES } from '@/types';
-import { LoginUserDto } from '@/dtos/Swagger/user_login.dto';
+import { LoginUserDto } from '@/dtos/Swagger/user-login.dto';
 import { UserDto } from '@/dtos/Application/user.dto';
 
 @Controller()
@@ -18,6 +18,7 @@ export class AuthController {
     const { cookie, findUser } = await this.authService.login(userData);
 
     res.setHeader('Set-Cookie', [cookie]);
+
     return { result: findUser, message: 'login' };
   }
 
@@ -32,7 +33,6 @@ export class AuthController {
   @UseBefore(authMiddleware)
   async logOut(@Req() req: RequestWithUser, @Res() res: Response) {
     const userData = req.user;
-
     const logOutUserData: UserDto = await this.authService.logout(userData);
 
     res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);

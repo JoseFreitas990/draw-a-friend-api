@@ -16,3 +16,10 @@ export class CreateGroupDto {
   @Type(() => Schema)
   public users: Schema[];
 }
+
+export class DeleteGroupDto {
+  @ValidateNested({ each: true })
+  @IsNotEmpty()
+  @Type(() => Schema)
+  public users: Schema[];
+}

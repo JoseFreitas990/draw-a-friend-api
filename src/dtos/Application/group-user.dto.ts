@@ -1,10 +1,10 @@
-import { UserGroup } from '@prisma/client';
+import { GroupUser } from '@prisma/client';
 
-export class UserGroupDto {
+export class GroupUserDto {
   groupId: string;
   userId: string;
 
-  constructor(userGroup: UserGroup) {
+  constructor(userGroup: GroupUser) {
     this.groupId = userGroup.groupId;
     this.userId = userGroup.userId;
   }

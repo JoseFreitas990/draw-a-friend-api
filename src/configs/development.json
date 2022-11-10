@@ -1,6 +1,6 @@
 {
     "env": "development",
-    "secretKey": "9g;]YYr_PzXQ!8gn-|KKe%>{!K3is^",
+    "secretKey": "secretKey",
     "log": {
         "format": "dev",
         "dir": "../logs"

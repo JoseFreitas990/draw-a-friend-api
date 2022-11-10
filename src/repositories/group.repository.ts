@@ -1,4 +1,4 @@
-import { CreateGroupDto } from '@/dtos/Swagger/group.dto';
+import { CreateGroupDto, DeleteGroupDto } from '@/dtos/Swagger/group.dto';
 import IGroupRepository from '@/interfaces/group/group_repo.interface';
 import prisma from '@/utils/db';
 import { Group } from '@prisma/client';
@@ -90,21 +90,20 @@ export class GroupRepository implements IGroupRepository {
     }
   }
 
-  async deleteGroup(id: string): Promise<Group> {
-    /**
-     * Delete a Group
-     */
-    // const updateRelation = await prisma.group.update({
-    //   where: {
-    //     id: id,
-    //   },
-    //   data: {
-    //     user: { disconnect: [] },
-    //   },
-    //   include: {
-    //     user: true,
-    //   },
+  async deleteUsersFromGroup(id: string, userData: DeleteGroupDto): Promise<any> {
+    // userData.users.forEach(user => {
+    //   console.log(user.userId);
     // });
+
+    const response = await prisma.groupUser.deleteMany({
+      where: {
+        groupId: id,
+        userId: { in: userData.users.map(user => user.userId) },
+      },
+    });
+  }
+
+  async deleteGroup(id: string): Promise<Group> {
     const deleteGroup = await prisma.group.delete({
       where: {
         id: id,
