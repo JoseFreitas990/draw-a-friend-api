@@ -27,6 +27,20 @@ export class DrawController {
     return { result: findOneUserData, message: 'findOne' };
   }
 
+  @Get('/draws/user/:id')
+  @OpenAPI({ summary: 'Return information about draws of a user' })
+  async getDrawsByUser(@Param('id') userId: string) {
+    const findOneUserData: DrawDto[] = await this.drawService.findDrawsByUser(userId);
+    return { result: findOneUserData, message: 'findMany' };
+  }
+
+  @Get('/draws/group/:id')
+  @OpenAPI({ summary: 'Return information about draws of a group' })
+  async getDrawsByGroup(@Param('id') groupId: string) {
+    const findOneGroupData: DrawDto[] = await this.drawService.findDrawsByGroup(groupId);
+    return { result: findOneGroupData, message: 'findMany' };
+  }
+
   @Post('/draws')
   //@UseBefore(authMiddleware)
   @HttpCode(201)

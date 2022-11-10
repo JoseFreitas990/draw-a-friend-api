@@ -50,7 +50,7 @@ export class GroupController {
   @UseBefore(validationMiddleware(CreateGroupDto, 'body', true))
   @OpenAPI({ summary: 'Update a group' })
   async updateGroup(@Param('id') id: string, @Body() groupData: CreateGroupDto) {
-    const updateGroup: Number = await this.groupService.updateGroup(id, groupData);
+    const updateGroup: GroupDto = await this.groupService.updateGroup(id, groupData);
     return { result: updateGroup, message: 'Group Updated' };
   }
 

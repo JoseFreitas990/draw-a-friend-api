@@ -46,12 +46,12 @@ export class GroupService implements IGroupService {
     return newGroup;
   }
 
-  async updateGroup(id: string, groupData: CreateGroupDto): Promise<Number> {
-    const findGroup: GroupDto = await this.groupRepository.findGroupById(id);
+  async updateGroup(groupId: string, groupData: CreateGroupDto): Promise<GroupDto> {
+    const findGroup: GroupDto = await this.groupRepository.findGroupById(groupId);
     if (!findGroup) throw new HttpException(409, 'No group found with this key');
 
-    const newGroup = await this.groupRepository.updateGroup(id, groupData);
-    if (newGroup <= 0) throw new HttpException(409, 'Error updating group');
+    const newGroup = await this.groupRepository.updateGroup(groupId, groupData);
+    if (!newGroup) throw new HttpException(409, 'Error updating group');
 
     return newGroup;
   }

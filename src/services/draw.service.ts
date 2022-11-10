@@ -27,6 +27,20 @@ export class DrawService implements IDrawService {
     return findDraw;
   }
 
+  async findDrawsByUser(userId: string): Promise<DrawDto[]> {
+    const draws: Draw[] = await this.drawRepository.findDrawsByUser(userId);
+    if (!draws) throw new HttpException(409, 'No Draws found with this key');
+
+    return draws;
+  }
+
+  async findDrawsByGroup(groupId: string): Promise<DrawDto[]> {
+    const draws: Draw[] = await this.drawRepository.findDrawsByGroup(groupId);
+    if (!draws) throw new HttpException(409, 'No Draws found with this key');
+
+    return draws;
+  }
+
   async createDraw(drawData: CreateDrawDto): Promise<DrawDto> {
     let newDraw: DrawDto;
 

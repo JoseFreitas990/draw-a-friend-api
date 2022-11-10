@@ -32,6 +32,34 @@ export class DrawRepository implements IDrawRepository {
     return draw;
   }
 
+  async findDrawsByUser(userId: string): Promise<Draw[]> {
+    /**
+     * Find Product by Id
+     */
+
+    const draws = await prisma.draw.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return draws;
+  }
+
+  async findDrawsByGroup(groupId: string): Promise<Draw[]> {
+    /**
+     * Find Product by Id
+     */
+
+    const draws = await prisma.draw.findMany({
+      where: {
+        groupId: groupId,
+      },
+    });
+
+    return draws;
+  }
+
   async createDraw(draw: CreateDrawDto): Promise<Draw> {
     /**
      * Create a Product
